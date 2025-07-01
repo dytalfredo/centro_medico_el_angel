@@ -1,0 +1,12 @@
+Options +FollowSymLinks -Indexes
+RewriteEngine On
+
+# Base de reescritura para la intranet.
+# Debe ser la ruta desde la raíz del dominio web hasta la carpeta 'admin'.
+# Para http://localhost/elangel_medical_center/admin/
+RewriteBase /elangel_medical_center/admin/
+
+# Si la solicitud no es un archivo o directorio existente, redirige a index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]

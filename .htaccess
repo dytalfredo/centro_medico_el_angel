@@ -1,0 +1,51 @@
+# elangel_medical_center/.htaccess (ARCHIVO EN LA RAÍZ DEL PROYECTO)
+
+# Asegura que el módulo mod_rewrite está activado
+RewriteEngine On
+
+# Define el archivo de índice predeterminado para este directorio.
+# Esto asegura que Apache busque 'index.php' por defecto cuando se accede a la raíz.
+DirectoryIndex index.php
+
+# Opciones para este directorio. Si hay conflictos con el httpd.conf,
+# puedes ajustar la línea de 'Options' en el httpd.conf (ver más abajo).
+# '-Indexes' evita el listado de directorios.
+# '+FollowSymLinks' es comúnmente necesario para RewriteRule.
+Options +FollowSymLinks -Indexes
+
+# Define la base de reescritura para el dominio o subdirectorio completo del proyecto
+# ¡IMPORTANTE! Ajusta esta línea a la ruta de tu proyecto.
+# Si tu proyecto está en http://localhost/elangel_medical_center/, usa:
+RewriteBase /elangel_medical_center/
+
+# ----------------------------------------------------
+# NUEVA REGLA: Redirige la raíz a /home (redirección externa 301)
+# Esto cambiará la URL en la barra de direcciones del navegador.
+RewriteRule ^$ home [R=301,L]
+
+# ----------------------------------------------------
+# REGLAS DE SEGURIDAD: Denegar acceso directo a directorios sensibles
+# Esto es CRUCIAL para proteger tu código fuente y archivos de configuración.
+# Cualquier solicitud directa a estas carpetas resultará en un error 403 Forbidden.
+# `intranet_app` es el nombre de la carpeta de la lógica de la intranet.
+# `admin/` es el punto de entrada de la intranet, así que NO lo incluimos aquí.
+RewriteRule ^(app|intranet_app|vendor|config|models|controllers|views|Core|assets/css|assets/js|assets/images)/ - [F,L,NC]
+
+
+# ----------------------------------------------------
+# REGLA PARA OCULTAR '/public' en la URL (Front Controller para la web pública)
+# Esta regla interna redirige todas las solicitudes que no sean 'admin/'
+# o archivos/directorios existentes en la raíz, a la carpeta 'public/'.
+# El usuario final no verá '/public' en su navegador.
+
+# No reescribir si la solicitud ya apunta directamente a 'public/'
+RewriteCond %{REQUEST_URI} !^/elangel_medical_center/public/ [NC]
+# No reescribir si la solicitud apunta al directorio 'admin/' (para que la intranet siga funcionando)
+RewriteCond %{REQUEST_URI} !^/elangel_medical_center/admin/ [NC]
+# No reescribir si la solicitud es para un archivo existente en la raíz
+RewriteCond %{REQUEST_FILENAME} !-f
+# No reescribir si la solicitud es para un directorio existente en la raíz (ej. 'public/', 'admin/')
+RewriteCond %{REQUEST_FILENAME} !-d
+# Reescribir cualquier otra cosa a 'public/index.php'
+# La bandera QSA (Query String Append) es para pasar los parámetros de la URL (GET).
+RewriteRule ^(.*)$ public/index.php/$1 [L,QSA]

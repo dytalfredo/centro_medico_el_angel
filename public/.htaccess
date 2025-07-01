@@ -1,0 +1,18 @@
+# public/.htaccess
+
+# Evita que se listen los contenidos de este directorio si no hay un archivo de índice.
+Options -Indexes
+
+RewriteEngine On
+
+# Define la base de la reescritura para este directorio.
+# Esto es crucial para que las reglas internas de este .htaccess funcionen correctamente
+# DESPUÉS de que la solicitud haya sido reescrita o dirigida a la carpeta 'public'.
+# Ajusta esta línea a la ruta de tu proyecto relativa a 'public'.
+RewriteBase /elangel_medical_center/public/
+
+# Redirige todas las solicitudes que no corresponden a un archivo o directorio existente
+# dentro de 'public/' a 'index.php' de 'public/'.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L]
